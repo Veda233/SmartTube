@@ -25,7 +25,7 @@ jobs:
       - name: Build debug APK (no release signing secrets)
         run: |
           chmod +x gradlew
-          ./gradlew :smarttubetv:assembleStbetaDebug --stacktrace --no-daemon
+          ./gradlew :smarttubetv:assembleStbetaDebug -PdramaBuild=true --stacktrace --no-daemon
       - name: Inspect APK minSdkVersion
         if: success()
         shell: bash
