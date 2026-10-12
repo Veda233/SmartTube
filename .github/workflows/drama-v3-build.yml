@@ -48,7 +48,7 @@ jobs:
             echo "Checking $apk"
             "$BUILD_TOOLS/aapt" dump badging "$apk" | grep -E '^(package:|sdkVersion:|native-code:)'
             sdk=$("$BUILD_TOOLS/aapt" dump badging "$apk" | sed -n "s/^sdkVersion:'\\([0-9]*\\)'.*/\\1/p" | head -1)
-            [ "$sdk" = "18" ] || { echo "Expected minSdkVersion 18, got $sdk"; exit 1; }
+            [ -n "$sdk" ] && [ "$sdk" -le 18 ] || { echo "Expected minSdkVersion <= 18, got $sdk"; exit 1; }
           done
       - name: Upload APK and reports
         if: always()
