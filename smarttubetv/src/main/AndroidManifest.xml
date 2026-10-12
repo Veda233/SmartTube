@@ -60,7 +60,7 @@
         tools:replace="android:theme,android:allowBackup"
         tools:ignore="GoogleAppIndexingWarning,LockedOrientationActivity,UnusedAttribute,DiscouragedApi">
 
-        <!-- Drama V3 opt-in TV launcher; upstream launcher preserved. -->
+        <!-- Drama V3 is the sole launcher; upstream playback activities are retained. -->
         <activity android:name="com.liskovsoft.smartyoutubetv2.tv.ui.drama.DramaActivity"
             android:exported="true"
             android:label="SmartTube 追剧版"
@@ -85,11 +85,8 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection"
             android:screenOrientation="unspecified">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
             <!-- Process intents from other apps -->
             <intent-filter>
