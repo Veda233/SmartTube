@@ -2,6 +2,10 @@ name: Drama V3 build baseline
 
 on:
   workflow_dispatch:
+  push:
+    branches: [feature/drama-v3]
+    paths:
+      - '.github/workflows/drama-v3-build.yml'
 
 permissions:
   contents: read
