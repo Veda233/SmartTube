@@ -2,17 +2,6 @@ name: Drama V3 build baseline
 
 on:
   workflow_dispatch:
-  push:
-    branches: [feature/drama-v3]
-    paths:
-      - 'smarttubetv/**'
-      - 'common/**'
-      - 'gradle/**'
-      - 'gradlew'
-      - 'gradle.properties'
-      - 'build.gradle'
-      - 'settings.gradle'
-      - '.github/workflows/drama-v3-build.yml'
 
 permissions:
   contents: read
