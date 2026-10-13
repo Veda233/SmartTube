@@ -34,10 +34,56 @@ public final class DramaActivity extends Activity {
   new Thread(()->{JSONObject response=null;Exception error=null;try{DramaNasClient c=new DramaNasClient(server);if(token.length()>0)c.setToken(token);response=req.run(c);}catch(Exception e){error=e;}
    final JSONObject r=response;final Exception e=error;runOnUiThread(()->{if(!destroyed)done.accept(r,e);});},"drama-api").start();
  }
- private void configure(){EditText edit=new EditText(this);edit.setSingleLine(true);edit.setText(prefs.server().length()==0?"http://192.168.1.100:8088":prefs.server());
-  new AlertDialog.Builder(this).setTitle("飞牛 NAS 地址").setView(edit).setNegativeButton("取消",null)
-   .setPositiveButton("连接",(d,w)->{String u=edit.getText().toString().trim();if(!u.matches("https?://[^/ ]+/?")){toast("NAS 地址格式错误");return;}
-    if(!u.equals(prefs.server()))prefs.save(u,"");if(prefs.token().length()==0)pair();else load();}).show();
+ private void configure(){
+  String old=prefs.server();
+  String scheme="http";
+  String host="";
+  String port="8088";
+  try{
+   if(old.length()>0){
+    android.net.Uri uri=android.net.Uri.parse(old);
+    if("https".equals(uri.getScheme()))scheme="https";
+    if(uri.getHost()!=null)host=uri.getHost();
+    if(uri.getPort()>0)port=String.valueOf(uri.getPort());
+    else if("https".equals(scheme))port="443";
+    else port="80";
+   }
+  }catch(Exception ignored){}
+  final String selectedScheme=scheme;
+  LinearLayout fields=new LinearLayout(this);
+  fields.setOrientation(LinearLayout.VERTICAL);
+  int space=(int)(20*getResources().getDisplayMetrics().density);
+  fields.setPadding(space,8,space,0);
+  TextView addressLabel=new TextView(this);
+  addressLabel.setText("IP / 域名");
+  fields.addView(addressLabel);
+  EditText address=new EditText(this);
+  address.setSingleLine(true);
+  address.setHint("例如 192.168.1.100");
+  address.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_VARIATION_URI);
+  address.setText(host);
+  fields.addView(address);
+  TextView portLabel=new TextView(this);
+  portLabel.setText("端口号");
+  fields.addView(portLabel);
+  EditText portInput=new EditText(this);
+  portInput.setSingleLine(true);
+  portInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+  portInput.setText(port);
+  fields.addView(portInput);
+  new AlertDialog.Builder(this).setTitle("请输入配置地址").setView(fields)
+   .setNegativeButton("取消",null)
+   .setPositiveButton("连接",(d,w)->{
+    String hostname=address.getText().toString().trim();
+    String portText=portInput.getText().toString().trim();
+    if(!hostname.matches("[A-Za-z0-9._-]+")||portText.length()==0){toast("请输入正确的 IP / 域名和端口号");return;}
+    int portNum;
+    try{portNum=Integer.parseInt(portText);}catch(NumberFormatException e){toast("端口号无效");return;}
+    if(portNum<1||portNum>65535){toast("端口号必须在 1–65535 之间");return;}
+    String url=selectedScheme+"://"+hostname+":"+portNum;
+    if(!url.equals(prefs.server()))prefs.save(url,"");
+    if(prefs.token().length()==0)pair();else load();
+   }).show();
  }
  private void pair(){show("配对",new String[]{"正在申请配对码…"});
   request(c->c.startPair("SmartTube Drama TV"),(r,e)->{if(e!=null){fail(e);return;}pendingCode=r.optString("code");pendingToken=r.optString("device_token");
